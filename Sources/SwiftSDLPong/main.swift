@@ -46,6 +46,7 @@ defer {
 let paddleWidth: Float = 15
 let paddleHeight: Float = 100
 let ballSize: Float = 15
+let paddleSpeed: Float = 3
 
 var leftPaddle = SDL_FRect(
     x: 40,
@@ -77,6 +78,29 @@ while isRunning {
             isRunning = false
         }
     }    
+
+    let keyboardState = SDL_GetKeyboardState(nil)
+
+    if let keyboardState {
+        if keyboardState[Int(SDL_SCANCODE_W.rawValue)] {
+            leftPaddle.y -= paddleSpeed
+        }
+
+        if keyboardState[Int(SDL_SCANCODE_S.rawValue)] {
+            leftPaddle.y += paddleSpeed
+        }
+
+        if keyboardState[Int(SDL_SCANCODE_UP.rawValue)] {
+            rightPaddle.y -= paddleSpeed
+        }
+
+        if keyboardState[Int(SDL_SCANCODE_DOWN.rawValue)] {
+            rightPaddle.y += paddleSpeed
+        }
+    }
+
+    leftPaddle.y = max(0, min(leftPaddle.y, Float(screenHeight) - leftPaddle.h))
+    rightPaddle.y = max(0, min(rightPaddle.y, Float(screenHeight) - rightPaddle.h))
 
     SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255)
     SDL_RenderClear(renderer)
