@@ -72,6 +72,9 @@ var ball = SDL_FRect(
 var isRunning = true
 var event = SDL_Event()
 
+var ballVelocityX: Float = 0
+var ballVelocityY: Float = 0.3
+
 while isRunning {
     while SDL_PollEvent(&event) {
         if event.type == SDL_EVENT_QUIT.rawValue {
@@ -101,6 +104,19 @@ while isRunning {
 
     leftPaddle.y = max(0, min(leftPaddle.y, Float(screenHeight) - leftPaddle.h))
     rightPaddle.y = max(0, min(rightPaddle.y, Float(screenHeight) - rightPaddle.h))
+
+    ball.x += ballVelocityX
+    ball.y += ballVelocityY
+
+    if ball.y <= 0 {
+        ball.y = 0
+        ballVelocityY *= -1
+    }
+
+    if ball.y + ball.h > Float(screenHeight) {
+        ball.y = Float(screenHeight) - ball.h
+        ballVelocityY *= -1
+    }
 
     SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255)
     SDL_RenderClear(renderer)
