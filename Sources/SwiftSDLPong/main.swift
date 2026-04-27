@@ -64,7 +64,7 @@ var rightPaddle = SDL_FRect(
 
 var ball = SDL_FRect(
     x: Float(screenWidth) / 2 - ballSize / 2,
-    y: Float(screenHeight) / 2 - paddleHeight / 2,
+    y: Float(screenHeight) / 2 - ballSize / 2,
     w: ballSize,
     h: ballSize
 )
@@ -75,11 +75,23 @@ var event = SDL_Event()
 var ballVelocityX: Float = 0.4
 var ballVelocityY: Float = 0.3
 
+var leftScore = 0
+var rightScore = 0
+
 func intersects(_ a: SDL_FRect, _ b: SDL_FRect) -> Bool {
     a.x < b.x + b.w &&
     a.x + a.w > b.x &&
     a.y < b.y + b.h &&
     a.y + a.h > b.y
+}
+
+@MainActor
+func resetBall(towardsLeft: Bool) {
+    ball.x = Float(screenWidth) / 2 - ball.w / 2
+    ball.y = Float(screenHeight) / 2 - ball.h / 2
+
+    ballVelocityX = towardsLeft ? -0.4 : 0.4
+    ballVelocityY = Bool.random() ? -0.3 : 0.3
 }
 
 while isRunning {
@@ -133,6 +145,18 @@ while isRunning {
     if intersects(ball, rightPaddle), ballVelocityX > 0 {
         ball.x = rightPaddle.x - rightPaddle.w
         ballVelocityX *= -1
+    }
+
+    if ball.x + ball.w < 0 {
+        rightScore += 1
+        print("Left \(leftScore) - \(rightScore) Right")
+        resetBall(towardsLeft: false)
+    }
+
+    if ball.x > Float(screenWidth) {
+        leftScore += 1
+        print("Left \(leftScore) - \(rightScore) Right")
+        resetBall(towardsLeft: true)
     }
 
     SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255)
