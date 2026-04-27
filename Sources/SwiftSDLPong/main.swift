@@ -46,7 +46,7 @@ defer {
 let paddleWidth: Float = 15
 let paddleHeight: Float = 100
 let ballSize: Float = 15
-let paddleSpeed: Float = 3
+let paddleSpeed: Float = 1
 
 var leftPaddle = SDL_FRect(
     x: 40,
@@ -72,8 +72,15 @@ var ball = SDL_FRect(
 var isRunning = true
 var event = SDL_Event()
 
-var ballVelocityX: Float = 0
+var ballVelocityX: Float = 0.4
 var ballVelocityY: Float = 0.3
+
+func intersects(_ a: SDL_FRect, _ b: SDL_FRect) -> Bool {
+    a.x < b.x + b.w &&
+    a.x + a.w > b.x &&
+    a.y < b.y + b.h &&
+    a.y + a.h > b.y
+}
 
 while isRunning {
     while SDL_PollEvent(&event) {
@@ -116,6 +123,16 @@ while isRunning {
     if ball.y + ball.h > Float(screenHeight) {
         ball.y = Float(screenHeight) - ball.h
         ballVelocityY *= -1
+    }
+
+    if intersects(ball, leftPaddle), ballVelocityX < 0 {
+        ball.x = leftPaddle.x + leftPaddle.w
+        ballVelocityX *= -1
+    }
+
+    if intersects(ball, rightPaddle), ballVelocityX > 0 {
+        ball.x = rightPaddle.x - rightPaddle.w
+        ballVelocityX *= -1
     }
 
     SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255)
