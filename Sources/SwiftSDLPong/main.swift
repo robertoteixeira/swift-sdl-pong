@@ -90,8 +90,23 @@ func resetBall(towardsLeft: Bool) {
     ball.x = Float(screenWidth) / 2 - ball.w / 2
     ball.y = Float(screenHeight) / 2 - ball.h / 2
 
-    ballVelocityX = towardsLeft ? (ballVelocityX * -1)  : ballVelocityX
-    ballVelocityY = Bool.random() ? (ballVelocityY * -1)  : ballVelocityY
+    ballVelocityX = towardsLeft ? -260 : 260
+    ballVelocityY = Bool.random() ? -180 : 180
+}
+
+@MainActor
+func applyPaddleBounce(ball: SDL_FRect, paddle: SDL_FRect, movingRight: Bool) {
+    let ballCenterY = ball.y + ball.h / 2
+    let paddleCenterY = paddle.y + paddle.h / 2
+
+    let distanceFromCenter = ballCenterY - paddleCenterY
+    let normalizedDistance = distanceFromCenter / (paddle.h / 2)
+
+    let ballSpeedX: Float = 300
+    let maxBallSpeedY: Float = 280
+
+    ballVelocityX = movingRight ? ballSpeedX : -ballSpeedX
+    ballVelocityY = normalizedDistance * maxBallSpeedY
 }
 
 var lastFrameTime = SDL_GetTicks()
@@ -145,12 +160,12 @@ while isRunning {
 
     if intersects(ball, leftPaddle), ballVelocityX < 0 {
         ball.x = leftPaddle.x + leftPaddle.w
-        ballVelocityX *= -1
+        applyPaddleBounce(ball: ball, paddle: leftPaddle, movingRight: true)
     }
 
     if intersects(ball, rightPaddle), ballVelocityX > 0 {
-        ball.x = rightPaddle.x - rightPaddle.w
-        ballVelocityX *= -1
+        ball.x = rightPaddle.x - ball.w
+        applyPaddleBounce(ball: ball, paddle: rightPaddle, movingRight: false)
     }
 
     if ball.x + ball.w < 0 {
