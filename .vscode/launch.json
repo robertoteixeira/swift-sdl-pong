@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:SwiftSDLPong}",
+            "name": "Debug SwiftSDLPong",
+            "target": "SwiftSDLPong",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug SwiftSDLPong"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:SwiftSDLPong}",
+            "name": "Release SwiftSDLPong",
+            "target": "SwiftSDLPong",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release SwiftSDLPong"
+        }
+    ]
+}
