@@ -46,7 +46,7 @@ defer {
 let paddleWidth: Float = 15
 let paddleHeight: Float = 100
 let ballSize: Float = 15
-let paddleSpeed: Float = 1
+let paddleSpeed: Float = 400
 
 var leftPaddle = SDL_FRect(
     x: 40,
@@ -72,8 +72,8 @@ var ball = SDL_FRect(
 var isRunning = true
 var event = SDL_Event()
 
-var ballVelocityX: Float = 0.4
-var ballVelocityY: Float = 0.3
+var ballVelocityX: Float = 260
+var ballVelocityY: Float = 180
 
 var leftScore = 0
 var rightScore = 0
@@ -90,11 +90,17 @@ func resetBall(towardsLeft: Bool) {
     ball.x = Float(screenWidth) / 2 - ball.w / 2
     ball.y = Float(screenHeight) / 2 - ball.h / 2
 
-    ballVelocityX = towardsLeft ? -0.4 : 0.4
-    ballVelocityY = Bool.random() ? -0.3 : 0.3
+    ballVelocityX = towardsLeft ? (ballVelocityX * -1)  : ballVelocityX
+    ballVelocityY = Bool.random() ? (ballVelocityY * -1)  : ballVelocityY
 }
 
+var lastFrameTime = SDL_GetTicks()
+
 while isRunning {
+    let currentFrameTime = SDL_GetTicks()
+    let deltaTime = Float(currentFrameTime - lastFrameTime) / 1000
+    lastFrameTime = currentFrameTime
+
     while SDL_PollEvent(&event) {
         if event.type == SDL_EVENT_QUIT.rawValue {
             isRunning = false
@@ -105,27 +111,27 @@ while isRunning {
 
     if let keyboardState {
         if keyboardState[Int(SDL_SCANCODE_W.rawValue)] {
-            leftPaddle.y -= paddleSpeed
+            leftPaddle.y -= paddleSpeed * deltaTime
         }
 
         if keyboardState[Int(SDL_SCANCODE_S.rawValue)] {
-            leftPaddle.y += paddleSpeed
+            leftPaddle.y += paddleSpeed * deltaTime
         }
 
         if keyboardState[Int(SDL_SCANCODE_UP.rawValue)] {
-            rightPaddle.y -= paddleSpeed
+            rightPaddle.y -= paddleSpeed * deltaTime
         }
 
         if keyboardState[Int(SDL_SCANCODE_DOWN.rawValue)] {
-            rightPaddle.y += paddleSpeed
+            rightPaddle.y += paddleSpeed * deltaTime
         }
     }
 
     leftPaddle.y = max(0, min(leftPaddle.y, Float(screenHeight) - leftPaddle.h))
     rightPaddle.y = max(0, min(rightPaddle.y, Float(screenHeight) - rightPaddle.h))
 
-    ball.x += ballVelocityX
-    ball.y += ballVelocityY
+    ball.x += ballVelocityX * deltaTime
+    ball.y += ballVelocityY * deltaTime
 
     if ball.y <= 0 {
         ball.y = 0
