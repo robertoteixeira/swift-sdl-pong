@@ -109,6 +109,26 @@ func applyPaddleBounce(ball: SDL_FRect, paddle: SDL_FRect, movingRight: Bool) {
     ballVelocityY = normalizedDistance * maxBallSpeedY
 }
 
+func renderCenterLine(renderer: OpaquePointer?) {
+    let dashWidth: Float = 6
+    let dashHeight: Float = 24
+    let dashGap: Float = 16
+
+    let x: Float = Float(screenWidth) / 2 - dashWidth / 2
+    var y: Float = 0
+
+    while y < Float(screenHeight) {
+        var dash = SDL_FRect(
+            x: x,
+            y: y,
+            w: dashWidth,
+            h: dashHeight
+        )
+        SDL_RenderFillRect(renderer, &dash)
+        y += dashHeight + dashGap
+    }
+}
+
 var lastFrameTime = SDL_GetTicks()
 
 while isRunning {
@@ -184,6 +204,8 @@ while isRunning {
     SDL_RenderClear(renderer)
 
     SDL_SetRenderDrawColor(renderer, 240, 240, 240, 255)
+
+    renderCenterLine(renderer: renderer)
 
     SDL_RenderFillRect(renderer, &leftPaddle)
     SDL_RenderFillRect(renderer, &rightPaddle)
