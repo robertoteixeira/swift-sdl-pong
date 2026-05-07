@@ -94,13 +94,6 @@ let digitSegments: [Int: [Int]] = [
     9: [0, 1, 2, 3, 5, 6]
 ]
 
-func intersects(_ a: SDL_FRect, _ b: SDL_FRect) -> Bool {
-    a.x < b.x + b.w &&
-    a.x + a.w > b.x &&
-    a.y < b.y + b.h &&
-    a.y + a.h > b.y
-}
-
 @MainActor
 func resetBall(towardsLeft: Bool) {
     ball.x = Float(screenWidth) / 2 - ball.w / 2
