@@ -1,13 +1,6 @@
 import Darwin
 import CSDL3
 
-enum GameState {
-    case waitingToStart
-    case playing
-    case paused
-    case gameOver
-}
-
 let screenWidth: Int32 = 800
 let screenHeight: Int32 = 600
 
