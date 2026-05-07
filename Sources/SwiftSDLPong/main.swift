@@ -1,6 +1,13 @@
 import Darwin
 import CSDL3
 
+enum GameState {
+    case waitingToStart
+    case playing
+    case paused
+    case gameOver
+}
+
 let screenWidth: Int32 = 800
 let screenHeight: Int32 = 600
 
@@ -77,6 +84,9 @@ var ballVelocityY: Float = 180
 
 var leftScore = 0
 var rightScore = 0
+
+var gameState: GameState = .waitingToStart
+let winningScore = 5
 
 let digitSegments: [Int: [Int]] = [
     0: [0, 1, 2, 3, 4, 5],
@@ -174,7 +184,22 @@ func renderScore(renderer: OpaquePointer?) {
     renderDigit(rightScore % 10, x: Float(screenWidth) / 2 + 45, y: y, scale: scale, renderer: renderer)
 }
 
+@MainActor 
+func restartGame() {
+    leftScore = 0
+    rightScore = 0
+
+    leftPaddle.y = Float(screenHeight) / 2 - leftPaddle.h / 2
+    rightPaddle.y = Float(screenHeight) / 2 - rightPaddle.h / 2
+
+    gameState = .waitingToStart
+    print("Press Space to start")
+}
+
 var lastFrameTime = SDL_GetTicks()
+
+resetBall(towardsLeft: Bool.random())
+print("Press Space to start")
 
 while isRunning {
     let currentFrameTime = SDL_GetTicks()
@@ -185,64 +210,92 @@ while isRunning {
         if event.type == SDL_EVENT_QUIT.rawValue {
             isRunning = false
         }
+
+        if event.type == SDL_EVENT_KEY_DOWN.rawValue {
+            switch event.key.scancode {
+                case SDL_SCANCODE_SPACE:
+                    if gameState == .waitingToStart {
+                        gameState = .playing
+                        print("Game Started")
+                    }
+                case SDL_SCANCODE_P:
+                    if gameState == .playing {
+                        gameState = .paused
+                        print("Paused")
+                    } else if gameState == .paused {
+                        gameState = .playing
+                        print("Resumed")
+                    }
+                case SDL_SCANCODE_R:
+                    if gameState == .gameOver {
+                        restartGame()
+                    }
+                case SDL_SCANCODE_ESCAPE:
+                    isRunning = false
+                default:
+                    break
+            }
+        }
     }    
 
-    let keyboardState = SDL_GetKeyboardState(nil)
+    if gameState == .playing {
+        let keyboardState = SDL_GetKeyboardState(nil)
 
-    if let keyboardState {
-        if keyboardState[Int(SDL_SCANCODE_W.rawValue)] {
-            leftPaddle.y -= paddleSpeed * deltaTime
+        if let keyboardState {
+            if keyboardState[Int(SDL_SCANCODE_W.rawValue)] {
+                leftPaddle.y -= paddleSpeed * deltaTime
+            }
+
+            if keyboardState[Int(SDL_SCANCODE_S.rawValue)] {
+                leftPaddle.y += paddleSpeed * deltaTime
+            }
+
+            if keyboardState[Int(SDL_SCANCODE_UP.rawValue)] {
+                rightPaddle.y -= paddleSpeed * deltaTime
+            }
+
+            if keyboardState[Int(SDL_SCANCODE_DOWN.rawValue)] {
+                rightPaddle.y += paddleSpeed * deltaTime
+            }
+        }
+    
+        leftPaddle.y = max(0, min(leftPaddle.y, Float(screenHeight) - leftPaddle.h))
+        rightPaddle.y = max(0, min(rightPaddle.y, Float(screenHeight) - rightPaddle.h))
+
+        ball.x += ballVelocityX * deltaTime
+        ball.y += ballVelocityY * deltaTime
+
+        if ball.y <= 0 {
+            ball.y = 0
+            ballVelocityY *= -1
         }
 
-        if keyboardState[Int(SDL_SCANCODE_S.rawValue)] {
-            leftPaddle.y += paddleSpeed * deltaTime
+        if ball.y + ball.h > Float(screenHeight) {
+            ball.y = Float(screenHeight) - ball.h
+            ballVelocityY *= -1
         }
 
-        if keyboardState[Int(SDL_SCANCODE_UP.rawValue)] {
-            rightPaddle.y -= paddleSpeed * deltaTime
+        if intersects(ball, leftPaddle), ballVelocityX < 0 {
+            ball.x = leftPaddle.x + leftPaddle.w
+            applyPaddleBounce(ball: ball, paddle: leftPaddle, movingRight: true)
         }
 
-        if keyboardState[Int(SDL_SCANCODE_DOWN.rawValue)] {
-            rightPaddle.y += paddleSpeed * deltaTime
+        if intersects(ball, rightPaddle), ballVelocityX > 0 {
+            ball.x = rightPaddle.x - ball.w
+            applyPaddleBounce(ball: ball, paddle: rightPaddle, movingRight: false)
         }
-    }
 
-    leftPaddle.y = max(0, min(leftPaddle.y, Float(screenHeight) - leftPaddle.h))
-    rightPaddle.y = max(0, min(rightPaddle.y, Float(screenHeight) - rightPaddle.h))
+        if ball.x + ball.w < 0 {
+            rightScore += 1
+            print("Left \(leftScore) - \(rightScore) Right")
+            resetBall(towardsLeft: false)
+        }
 
-    ball.x += ballVelocityX * deltaTime
-    ball.y += ballVelocityY * deltaTime
-
-    if ball.y <= 0 {
-        ball.y = 0
-        ballVelocityY *= -1
-    }
-
-    if ball.y + ball.h > Float(screenHeight) {
-        ball.y = Float(screenHeight) - ball.h
-        ballVelocityY *= -1
-    }
-
-    if intersects(ball, leftPaddle), ballVelocityX < 0 {
-        ball.x = leftPaddle.x + leftPaddle.w
-        applyPaddleBounce(ball: ball, paddle: leftPaddle, movingRight: true)
-    }
-
-    if intersects(ball, rightPaddle), ballVelocityX > 0 {
-        ball.x = rightPaddle.x - ball.w
-        applyPaddleBounce(ball: ball, paddle: rightPaddle, movingRight: false)
-    }
-
-    if ball.x + ball.w < 0 {
-        rightScore += 1
-        print("Left \(leftScore) - \(rightScore) Right")
-        resetBall(towardsLeft: false)
-    }
-
-    if ball.x > Float(screenWidth) {
-        leftScore += 1
-        print("Left \(leftScore) - \(rightScore) Right")
-        resetBall(towardsLeft: true)
+        if ball.x > Float(screenWidth) {
+            leftScore += 1
+            print("Left \(leftScore) - \(rightScore) Right")
+            resetBall(towardsLeft: true)
+        }
     }
 
     SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255)
