@@ -81,19 +81,6 @@ var rightScore = 0
 var gameState: GameState = .waitingToStart
 let winningScore = 5
 
-let digitSegments: [Int: [Int]] = [
-    0: [0, 1, 2, 3, 4, 5],
-    1: [1, 2],
-    2: [0, 1, 6, 4, 3],
-    3: [0, 1, 6, 2, 3],
-    4: [5, 6, 1, 2],
-    5: [0, 5, 6, 2, 3],
-    6: [0, 5, 6, 4, 2, 3],
-    7: [0, 1, 2],
-    8: [0, 1, 2, 3, 4, 5, 6],
-    9: [0, 1, 2, 3, 5, 6]
-]
-
 @MainActor
 func resetBall(towardsLeft: Bool) {
     ball.x = Float(screenWidth) / 2 - ball.w / 2
@@ -116,58 +103,6 @@ func applyPaddleBounce(ball: SDL_FRect, paddle: SDL_FRect, movingRight: Bool) {
 
     ballVelocityX = movingRight ? ballSpeedX : -ballSpeedX
     ballVelocityY = normalizedDistance * maxBallSpeedY
-}
-
-func renderCenterLine(renderer: OpaquePointer?) {
-    let dashWidth: Float = 6
-    let dashHeight: Float = 24
-    let dashGap: Float = 16
-
-    let x: Float = Float(screenWidth) / 2 - dashWidth / 2
-    var y: Float = 0
-
-    while y < Float(screenHeight) {
-        var dash = SDL_FRect(
-            x: x,
-            y: y,
-            w: dashWidth,
-            h: dashHeight
-        )
-        SDL_RenderFillRect(renderer, &dash)
-        y += dashHeight + dashGap
-    }
-}
-
-func renderDigit(_ digit: Int, x: Float, y: Float, scale: Float, renderer: OpaquePointer?) {
-    guard let segments = digitSegments[digit] else { return }
-
-    let thickness = scale
-    let width = scale * 6
-    let height = scale * 10
-
-    let segmentRects: [SDL_FRect] = [
-        SDL_FRect(x: x + thickness, y: y, w: width - 2 * thickness, h: thickness),
-        SDL_FRect(x: x + width - thickness, y: y + thickness, w: thickness, h: height / 2 - thickness),
-        SDL_FRect(x: x + width - thickness, y: y + height / 2, w: thickness, h: height / 2 - thickness),
-        SDL_FRect(x: x + thickness, y: y + height - thickness, w: width - 2 * thickness, h: thickness),
-        SDL_FRect(x: x, y: y + height / 2, w: thickness, h: height / 2 - thickness),
-        SDL_FRect(x: x, y: y + thickness, w: thickness, h: height / 2 - thickness),
-        SDL_FRect(x: x + thickness, y: y + height / 2 - thickness / 2, w: width - 2 * thickness, h: thickness)
-    ]
-
-    for index in segments {
-        var rect = segmentRects[index]
-        SDL_RenderFillRect(renderer, &rect)
-    }
-}
-
-@MainActor
-func renderScore(renderer: OpaquePointer?) {
-    let scale: Float = 6
-    let y: Float = 40
-
-    renderDigit(leftScore % 10, x: Float(screenWidth) / 2 - 80, y: y, scale: scale, renderer: renderer)
-    renderDigit(rightScore % 10, x: Float(screenWidth) / 2 + 45, y: y, scale: scale, renderer: renderer)
 }
 
 @MainActor 
@@ -289,8 +224,8 @@ while isRunning {
 
     SDL_SetRenderDrawColor(renderer, 240, 240, 240, 255)
 
-    renderCenterLine(renderer: renderer)
-    renderScore(renderer: renderer)
+    renderCenterLine(renderer: renderer, screenWidth: screenWidth, screenHeight: screenHeight)
+    renderScore(renderer: renderer, screenWidth: screenWidth, leftScore: leftScore, rightScore: rightScore)
 
     SDL_RenderFillRect(renderer, &leftPaddle)
     SDL_RenderFillRect(renderer, &rightPaddle)
