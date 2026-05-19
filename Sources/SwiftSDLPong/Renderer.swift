@@ -56,24 +56,59 @@ func renderDigit(_ digit: Int, x: Float, y: Float, scale: Float, renderer: Opaqu
     }
 }
 
+func renderNumber(
+    _ number: Int,
+    x: Float,
+    y: Float,
+    scale: Float,
+    renderer: OpaquePointer?
+) {
+    let digits = String(number).compactMap {Int(String($0))}
+
+    let digitWidth = scale * 6
+    let digitSpacing = scale * 2
+
+    for(index, digit) in digits.enumerated() {
+        renderDigit(
+            digit,
+            x: x + Float(index) * (digitWidth + digitSpacing),
+            y: y,
+            scale: scale,
+            renderer: renderer
+        )
+    }
+}
+
 func renderScore(renderer: OpaquePointer?, screenWidth: Int32, leftScore: Int, rightScore: Int) {
     let scale: Float = 6
     let y: Float = 40
 
     let centerX = Float(screenWidth) / 2
     let digitWidth = scale * 6
+    let digitSpacing = scale * 2
     let scoreGapFromCenter: Float = 45
 
-    renderDigit(
-        leftScore % 10,
-        x: centerX - scoreGapFromCenter - digitWidth,
+    let leftDigitCount = max(1, String(leftScore).count)
+    let rightDigitCount = max(1, String(rightScore).count)
+
+    let leftScoreWidth = 
+        Float(leftDigitCount) * digitWidth +
+        Float(leftDigitCount - 1) * digitSpacing
+
+    let rightScoreWidth = 
+        Float(rightDigitCount) * digitWidth +
+        Float(rightDigitCount - 1) * digitSpacing
+
+    renderNumber(
+        leftScore,
+        x: centerX - scoreGapFromCenter - leftScoreWidth,
         y: y,
         scale: scale,
         renderer: renderer
     )
 
-    renderDigit(
-        rightScore % 10,
+    renderNumber(
+        rightScore,
         x: centerX + scoreGapFromCenter,
         y: y,
         scale: scale,
