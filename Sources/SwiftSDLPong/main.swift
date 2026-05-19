@@ -72,6 +72,9 @@ while isRunning {
                     game.restart()
                 }
 
+            case SDL_SCANCODE_ESCAPE:
+                isRunning = false
+
             default:
                 break
             }
@@ -99,9 +102,5 @@ while isRunning {
         rightScore: game.rightScore
     )
 
-    SDL_RenderFillRect(renderer, &game.leftPaddle)
-    SDL_RenderFillRect(renderer, &game.rightPaddle)
-    SDL_RenderFillRect(renderer, &game.ball)
-
-    SDL_RenderPresent(renderer)
+    renderGame(renderer: renderer, game: &game)
 }

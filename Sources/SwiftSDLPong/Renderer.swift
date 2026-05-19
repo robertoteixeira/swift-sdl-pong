@@ -80,3 +80,29 @@ func renderScore(renderer: OpaquePointer?, screenWidth: Int32, leftScore: Int, r
         renderer: renderer
     )    
 }
+
+func renderGame(renderer: OpaquePointer?, game: inout Game) {
+    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255)
+    SDL_RenderClear(renderer)
+
+    SDL_SetRenderDrawColor(renderer, 240, 240, 240, 255)
+
+    renderCenterLine(
+        renderer: renderer,
+        screenWidth: game.screenWidth,
+        screenHeight: game.screenHeight
+    )
+
+    renderScore(
+        renderer: renderer,
+        screenWidth: game.screenWidth,
+        leftScore: game.leftScore,
+        rightScore: game.rightScore
+    )
+
+    SDL_RenderFillRect(renderer, &game.leftPaddle)
+    SDL_RenderFillRect(renderer, &game.rightPaddle)
+    SDL_RenderFillRect(renderer, &game.ball)
+
+    SDL_RenderPresent(renderer)
+}
