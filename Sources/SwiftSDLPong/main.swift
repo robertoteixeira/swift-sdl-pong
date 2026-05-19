@@ -1,8 +1,7 @@
 import Darwin
 import CSDL3
 
-let screenWidth: Int32 = 800
-let screenHeight: Int32 = 600
+let configuration = GameConfiguration()
 
 guard SDL_Init(SDL_INIT_VIDEO) else {
     let error = String(cString: SDL_GetError())
@@ -16,8 +15,8 @@ defer {
 
 let window = SDL_CreateWindow(
     "Swift SDL Pong",
-    screenWidth,
-    screenHeight,
+    configuration.screenWidth,
+    configuration.screenHeight,
     0
 )
 
@@ -43,7 +42,7 @@ defer {
     SDL_DestroyRenderer(renderer)
 }
 
-var game = Game(screenWidth: screenWidth, screenHeight: screenHeight)
+var game = Game(configuration: configuration)
 
 var isRunning = true
 var event = SDL_Event()
@@ -91,13 +90,13 @@ while isRunning {
 
     renderCenterLine(
         renderer: renderer,
-        screenWidth: screenWidth,
-        screenHeight: screenHeight
+        screenWidth: game.screenWidth,
+        screenHeight: game.screenHeight
     )
 
     renderScore(
         renderer: renderer,
-        screenWidth: screenWidth,
+        screenWidth: game.screenWidth,
         leftScore: game.leftScore,
         rightScore: game.rightScore
     )

@@ -1,50 +1,53 @@
 import CSDL3
 
 struct Game {
-    let screenWidth: Int32
-    let screenHeight: Int32
+    let configuration: GameConfiguration
 
-    let paddleWidth: Float = 15
-    let paddleHeight: Float = 100
-    let ballSize: Float = 15
-    let paddleSpeed: Float = 400
-    let winningScore = 5
+    var screenWidth: Int32 {
+        configuration.screenWidth
+    }
+
+    var screenHeight: Int32 {
+        configuration.screenHeight
+    }
 
     var leftPaddle: SDL_FRect
     var rightPaddle: SDL_FRect
     var ball: SDL_FRect
 
-    var ballVelocityX: Float = 260
-    var ballVelocityY: Float = 180
+    var ballVelocityX: Float
+    var ballVelocityY: Float
 
     var leftScore = 0
     var rightScore = 0
 
     var state: GameState = .waitingToStart
 
-    init(screenWidth: Int32, screenHeight: Int32) {
-        self.screenWidth = screenWidth
-        self.screenHeight = screenHeight
+    init(configuration: GameConfiguration) {
+        self.configuration = configuration
+        
+        self.ballVelocityX = configuration.initialBallSpeedX
+        self.ballVelocityY = configuration.initialBallSpeedY
 
         self.leftPaddle = SDL_FRect(
             x: 40,
-            y: Float(screenHeight) / 2 - paddleHeight / 2,
-            w: paddleWidth,
-            h: paddleHeight
+            y: Float(configuration.screenHeight) / 2 - configuration.paddleHeight / 2,
+            w: configuration.paddleWidth,
+            h: configuration.paddleHeight
         )
 
         self.rightPaddle = SDL_FRect(
-            x: Float(screenWidth) - 40 - paddleWidth,
-            y: Float(screenHeight) / 2 - paddleHeight / 2,
-            w: paddleWidth,
-            h: paddleHeight
+            x: Float(configuration.screenWidth) - 40 - configuration.paddleWidth,
+            y: Float(configuration.screenHeight) / 2 - configuration.paddleHeight / 2,
+            w: configuration.paddleWidth,
+            h: configuration.paddleHeight
         )
 
         self.ball = SDL_FRect(
-            x: Float(screenWidth) / 2 - ballSize / 2,
-            y: Float(screenHeight) / 2 - ballSize / 2,
-            w: ballSize,
-            h: ballSize
+            x: Float(configuration.screenWidth) / 2 - configuration.ballSize / 2,
+            y: Float(configuration.screenHeight) / 2 - configuration.ballSize / 2,
+            w: configuration.ballSize,
+            h: configuration.ballSize
         )
 
         resetBall(towardsLeft: Bool.random())
@@ -96,19 +99,19 @@ struct Game {
         guard let keyboardState else { return }
 
         if keyboardState[Int(SDL_SCANCODE_W.rawValue)] {
-            leftPaddle.y -= paddleSpeed * deltaTime
+            leftPaddle.y -= configuration.paddleSpeed * deltaTime
         }
 
         if keyboardState[Int(SDL_SCANCODE_S.rawValue)] {
-            leftPaddle.y += paddleSpeed * deltaTime
+            leftPaddle.y += configuration.paddleSpeed * deltaTime
         }
 
         if keyboardState[Int(SDL_SCANCODE_UP.rawValue)] {
-            rightPaddle.y -= paddleSpeed * deltaTime
+            rightPaddle.y -= configuration.paddleSpeed * deltaTime
         }
 
         if keyboardState[Int(SDL_SCANCODE_DOWN.rawValue)] {
-            rightPaddle.y += paddleSpeed * deltaTime
+            rightPaddle.y += configuration.paddleSpeed * deltaTime
         }
     }
 
@@ -151,7 +154,7 @@ struct Game {
             rightScore += 1
             print("Left \(leftScore) - \(rightScore) Right")
 
-            if rightScore >= winningScore {
+            if rightScore >= configuration.winningScore {
                 state = .gameOver
                 print("Right player wins. Press R to restart.")
             } else {
@@ -163,7 +166,7 @@ struct Game {
             leftScore += 1
             print("Left \(leftScore) - \(rightScore) Right")
 
-            if leftScore >= winningScore {
+            if leftScore >= configuration.winningScore {
                 state = .gameOver
                 print("Left player wins. Press R to restart.")
             } else {
@@ -176,8 +179,8 @@ struct Game {
         ball.x = Float(screenWidth) / 2 - ball.w / 2
         ball.y = Float(screenHeight) / 2 - ball.h / 2
 
-        ballVelocityX = towardsLeft ? -260 : 260
-        ballVelocityY = Bool.random() ? -180 : 180
+        ballVelocityX = towardsLeft ? -configuration.initialBallSpeedX : configuration.initialBallSpeedX
+        ballVelocityY = Bool.random() ? -configuration.initialBallSpeedY : configuration.initialBallSpeedY
     }
 
     private mutating func applyPaddleBounce(paddle: SDL_FRect, movingRight: Bool) {
@@ -187,10 +190,7 @@ struct Game {
         let distanceFromCenter = ballCenterY - paddleCenterY
         let normalizedDistance = distanceFromCenter / (paddle.h / 2)
 
-        let ballSpeedX: Float = 300
-        let maxBallSpeedY: Float = 280
-
-        ballVelocityX = movingRight ? ballSpeedX : -ballSpeedX
-        ballVelocityY = normalizedDistance * maxBallSpeedY
+        ballVelocityX = movingRight ? configuration.paddleBounceSpeedX : -configuration.paddleBounceSpeedX
+        ballVelocityY = normalizedDistance * configuration.maxPaddleBounceSpeedY
     }
 }
