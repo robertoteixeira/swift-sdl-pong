@@ -98,6 +98,18 @@ struct Game {
     private mutating func handleInput(deltaTime: Float, keyboardState: UnsafePointer<Bool>?) {
         guard let keyboardState else { return }
 
+        handleLeftPlayerInput(deltaTime: deltaTime, keyboardState: keyboardState)
+
+        switch configuration.gameMode {
+            case .singlePlayer:
+                updateAIPaddle(deltaTime: deltaTime)
+            break
+            case .twoPlayers:
+                handleRightPlayerInput(deltaTime: deltaTime, keyboardState: keyboardState)
+        }
+    }
+
+    private mutating func handleLeftPlayerInput(deltaTime: Float, keyboardState: UnsafePointer<Bool>) {
         if keyboardState[Int(SDL_SCANCODE_W.rawValue)] {
             leftPaddle.y -= configuration.paddleSpeed * deltaTime
         }
@@ -105,7 +117,9 @@ struct Game {
         if keyboardState[Int(SDL_SCANCODE_S.rawValue)] {
             leftPaddle.y += configuration.paddleSpeed * deltaTime
         }
+    }
 
+    private mutating func handleRightPlayerInput(deltaTime: Float, keyboardState: UnsafePointer<Bool>) {
         if keyboardState[Int(SDL_SCANCODE_UP.rawValue)] {
             rightPaddle.y -= configuration.paddleSpeed * deltaTime
         }
@@ -114,6 +128,17 @@ struct Game {
             rightPaddle.y += configuration.paddleSpeed * deltaTime
         }
     }
+
+    private mutating func updateAIPaddle(deltaTime: Float) {
+        let ballCenterY = ball.y + ball.h / 2
+        let paddleCenterY = rightPaddle.y + rightPaddle.h / 2
+
+        if ballCenterY < paddleCenterY {
+            rightPaddle.y -= configuration.aiPaddleSpeed * deltaTime
+        } else if ballCenterY > paddleCenterY {
+            rightPaddle.y += configuration.aiPaddleSpeed * deltaTime
+        }
+    }    
 
     private mutating func clampPaddles() {
         leftPaddle.y = max(0, min(leftPaddle.y, Float(screenHeight) - leftPaddle.h))
