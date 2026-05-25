@@ -15,7 +15,7 @@ struct GameConfiguration {
     let paddleBounceSpeedX: Float = 300
     let maxPaddleBounceSpeedY: Float = 280
 
-    let winningScore = 15
+    let winningScore = 2
 
     let gameMode: GameMode = .singlePlayer
 }

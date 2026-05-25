@@ -116,6 +116,61 @@ func renderScore(renderer: OpaquePointer?, screenWidth: Int32, leftScore: Int, r
     )    
 }
 
+func renderPauseIcon(renderer: OpaquePointer?, screenWidth: Int32, screenHeight: Int32) {
+    let barWidth: Float = 6
+    let barHeight: Float = 26
+    let gap: Float = 6
+    let margin: Float = 24
+
+    let totalWidth = barWidth * 2 + gap
+    let startX = Float(screenWidth) - margin - totalWidth
+    let y = margin
+
+    var leftBar = SDL_FRect(
+        x: startX,
+        y: y,
+        w: barWidth,
+        h: barHeight
+    )
+
+    var rightBar = SDL_FRect(
+        x: startX + barWidth + gap,
+        y: y,
+        w: barWidth,
+        h: barHeight
+    )
+
+    SDL_RenderFillRect(renderer, &leftBar)
+    SDL_RenderFillRect(renderer, &rightBar)
+}
+
+func renderStartIndicator(renderer: OpaquePointer?, screenWidth: Int32, screenHeight: Int32) {
+    let size: Float = 9
+    let gap: Float = 6
+    let margin: Float = 24
+
+    let totalWidth = size * 2 - gap
+    let startX = Float(screenWidth) - margin - totalWidth
+    let y = margin + 8
+
+    var leftDot = SDL_FRect(
+        x: startX,
+        y: y,
+        w: size,
+        h: size
+    )
+
+    var rightDot = SDL_FRect(
+        x: startX + size + gap,
+        y: y,
+        w: size,
+        h: size
+    )
+
+    SDL_RenderFillRect(renderer, &leftDot)
+    SDL_RenderFillRect(renderer, &rightDot)
+}
+
 func renderGame(renderer: OpaquePointer?, game: inout Game) {
     SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255)
     SDL_RenderClear(renderer)
@@ -138,6 +193,15 @@ func renderGame(renderer: OpaquePointer?, game: inout Game) {
     SDL_RenderFillRect(renderer, &game.leftPaddle)
     SDL_RenderFillRect(renderer, &game.rightPaddle)
     SDL_RenderFillRect(renderer, &game.ball)
+
+    switch game.state {
+        case .waitingToStart:
+            renderStartIndicator(renderer: renderer, screenWidth: game.screenWidth, screenHeight: game.screenHeight)
+        case .paused:
+            renderPauseIcon(renderer: renderer, screenWidth: game.screenWidth, screenHeight: game.screenHeight)
+        case .playing, .gameOver:
+            break
+    }
 
     SDL_RenderPresent(renderer)
 }
