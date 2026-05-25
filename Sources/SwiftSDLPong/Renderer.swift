@@ -120,7 +120,7 @@ func renderPauseIcon(renderer: OpaquePointer?, screenWidth: Int32, screenHeight:
     let barWidth: Float = 6
     let barHeight: Float = 26
     let gap: Float = 6
-    let margin: Float = 24
+    let margin: Float = 20
 
     let totalWidth = barWidth * 2 + gap
     let startX = Float(screenWidth) - margin - totalWidth
@@ -147,7 +147,7 @@ func renderPauseIcon(renderer: OpaquePointer?, screenWidth: Int32, screenHeight:
 func renderStartIndicator(renderer: OpaquePointer?, screenWidth: Int32, screenHeight: Int32) {
     let size: Float = 9
     let gap: Float = 6
-    let margin: Float = 24
+    let margin: Float = 30
 
     let totalWidth = size * 2 - gap
     let startX = Float(screenWidth) - margin - totalWidth
@@ -169,6 +169,31 @@ func renderStartIndicator(renderer: OpaquePointer?, screenWidth: Int32, screenHe
 
     SDL_RenderFillRect(renderer, &leftDot)
     SDL_RenderFillRect(renderer, &rightDot)
+}
+
+func renderWinnerIndicator(renderer: OpaquePointer?, screenWidth: Int32, leftScore: Int, rightScore: Int) {
+    let markerWidth: Float = 42
+    let markerHeight: Float = 6
+    let y: Float = 112
+
+    let centerX = Float(screenWidth) / 2
+
+    let winnerX: Float
+
+    if leftScore > rightScore {
+        winnerX = centerX - 45 - markerWidth
+    } else {
+        winnerX = centerX + 45
+    }
+
+    var marker = SDL_FRect(
+        x: winnerX,
+        y: y,
+        w: markerWidth,
+        h: markerHeight
+    )
+
+    SDL_RenderFillRect(renderer, &marker)
 }
 
 func renderGame(renderer: OpaquePointer?, game: inout Game) {
@@ -199,7 +224,14 @@ func renderGame(renderer: OpaquePointer?, game: inout Game) {
             renderStartIndicator(renderer: renderer, screenWidth: game.screenWidth, screenHeight: game.screenHeight)
         case .paused:
             renderPauseIcon(renderer: renderer, screenWidth: game.screenWidth, screenHeight: game.screenHeight)
-        case .playing, .gameOver:
+        case .gameOver:
+            renderWinnerIndicator(
+                renderer: renderer, 
+                screenWidth: game.screenWidth, 
+                leftScore: game.leftScore, 
+                rightScore: game.rightScore
+            )
+        case .playing:
             break
     }
 
