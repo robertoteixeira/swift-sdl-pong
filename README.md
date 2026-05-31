@@ -19,6 +19,7 @@ The goal of this project is to explore a lightweight game loop, SDL rendering, k
   - Playing
   - Paused
   - Game over
+- Procedural SDL audio effects for wall hits, paddle hits, and scoring  
 
 ## Controls
 
@@ -61,6 +62,9 @@ Sources/SwiftSDLPong/
   Game.swift              Game state, update logic, scoring, collisions
   GameConfiguration.swift Configurable game constants
   GameState.swift         Game state enum
+  GameMode.swift          Single-player / two-player mode enum
+  GameEvent.swift         Events emitted by game logic
+  AudioPlayer.swift       Procedural SDL audio effects
   Renderer.swift          SDL rendering helpers
   Collision.swift         AABB collision helper
 ```
@@ -93,14 +97,20 @@ Sources/SwiftSDLPong/
 - Paddles
 - Ball
 
+`GameEvent.swift` defines lightweight events emitted by the game logic:
+
+- Wall hit
+- Paddle hit
+- Score
+
+`AudioPlayer.swift` listens to those events from `main.swift` and plays procedural sine-wave sound effects using SDL audio streams.
+
 ## Why SDL?
 
-SDL provides a small low-level layer for creating windows, handling input, and rendering simple graphics. This project uses SDL directly from Swift through a system library target and a module map.
+SDL provides a small low-level layer for creating windows, handling input, rendering simple graphics, and playing audio. This project uses SDL directly from Swift through a system library target and a module map.
 
 ## Next Improvements
 
-- Add sound effects
-- Add single-player mode with simple AI
 - Add SDL_ttf text rendering
 - Add a start/pause/game-over overlay
 - Add a gameplay GIF to this README
