@@ -6,6 +6,7 @@ final class AudioPlayer {
 
     private let sampleRate: Int32 = 48_000
     private let channels: Int32 = 1
+    private var isMuted = false
 
     init?() {
         var spec = SDL_AudioSpec()
@@ -47,8 +48,13 @@ final class AudioPlayer {
         playBeep(frequency: 220, duration: 0.14, volume: 0.30)
     }
 
+    func toggleMute() {
+        isMuted.toggle()
+        print(isMuted ? "Audio muted" : "Audio unmuted")
+    }
+
     private func playBeep(frequency: Float, duration: Float, volume: Float) {
-        guard let stream else { return }
+        guard !isMuted, let stream else { return }
 
         let sampleCount = Int(Float(sampleRate) * duration)
         let twoPi = Float.pi * 2

@@ -72,6 +72,9 @@ while isRunning {
                     game.restart()
                 }
 
+            case SDL_SCANCODE_M:
+                audioPlayer?.toggleMute()
+
             case SDL_SCANCODE_ESCAPE:
                 isRunning = false
 

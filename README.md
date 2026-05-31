@@ -32,6 +32,7 @@ The goal of this project is to explore a lightweight game loop, SDL rendering, k
 | `Space` | Start game |
 | `P` | Pause / resume |
 | `R` | Restart after game over |
+| `M` | Mute / unmute audio |
 | `Esc` | Close the game |
 
 ## Requirements
