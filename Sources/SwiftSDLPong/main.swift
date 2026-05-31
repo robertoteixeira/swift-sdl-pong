@@ -3,7 +3,7 @@ import CSDL3
 
 let configuration = GameConfiguration()
 
-guard SDL_Init(SDL_INIT_VIDEO) else {
+guard SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) else {
     let error = String(cString: SDL_GetError())
     print("SDL_Init failed: \(error)")
     exit(1)
@@ -43,6 +43,7 @@ defer {
 }
 
 var game = Game(configuration: configuration)
+let audioPlayer = AudioPlayer()
 
 var isRunning = true
 var event = SDL_Event()
@@ -81,25 +82,18 @@ while isRunning {
     }
 
     let keyboardState = SDL_GetKeyboardState(nil)
-    game.update(deltaTime: deltaTime, keyboardState: keyboardState)
+    let events = game.update(deltaTime: deltaTime, keyboardState: keyboardState)
 
-    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255)
-    SDL_RenderClear(renderer)
-
-    SDL_SetRenderDrawColor(renderer, 240, 240, 240, 255)
-
-    renderCenterLine(
-        renderer: renderer,
-        screenWidth: game.screenWidth,
-        screenHeight: game.screenHeight
-    )
-
-    renderScore(
-        renderer: renderer,
-        screenWidth: game.screenWidth,
-        leftScore: game.leftScore,
-        rightScore: game.rightScore
-    )
+    for event in events {
+        switch event {
+            case .wallHit:
+                audioPlayer?.playWallHit()
+            case .paddleHit:
+                audioPlayer?.playPaddleHit()
+            case .score:
+                audioPlayer?.playScore()
+        }
+    }
 
     renderGame(renderer: renderer, game: &game)
 }

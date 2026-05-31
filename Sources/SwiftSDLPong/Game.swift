@@ -84,15 +84,28 @@ struct Game {
         print("Press Space to start")
     }
 
-    mutating func update(deltaTime: Float, keyboardState: UnsafePointer<Bool>?) {
-        guard state == .playing else { return }
+    mutating func update(deltaTime: Float, keyboardState: UnsafePointer<Bool>?) -> [GameEvent] {
+        guard state == .playing else { return [] }
+
+        var events: [GameEvent] = []
 
         handleInput(deltaTime: deltaTime, keyboardState: keyboardState)
         clampPaddles()
         updateBall(deltaTime: deltaTime)
-        handleWallCollision()
-        handlePaddleCollision()
-        handleScoring()
+
+        if handleWallCollision() {
+            events.append(.wallHit)
+        }
+
+        if handlePaddleCollision() {
+            events.append(.paddleHit)
+        }
+
+        if handleScoring() {
+            events.append(.score)
+        }
+
+        return events
     }
 
     private mutating func handleInput(deltaTime: Float, keyboardState: UnsafePointer<Bool>?) {
@@ -150,31 +163,41 @@ struct Game {
         ball.y += ballVelocityY * deltaTime
     }
 
-    private mutating func handleWallCollision() {
+    private mutating func handleWallCollision() -> Bool {
+        var didHitWall = false 
+
         if ball.y <= 0 {
             ball.y = 0
             ballVelocityY *= -1
+            didHitWall = true
         }
 
         if ball.y + ball.h > Float(screenHeight) {
             ball.y = Float(screenHeight) - ball.h
             ballVelocityY *= -1
+            didHitWall = true
         }
+
+        return didHitWall
     }
 
-    private mutating func handlePaddleCollision() {
+    private mutating func handlePaddleCollision() -> Bool {
         if intersects(ball, leftPaddle), ballVelocityX < 0 {
             ball.x = leftPaddle.x + leftPaddle.w
             applyPaddleBounce(paddle: leftPaddle, movingRight: true)
+            return true
         }
 
         if intersects(ball, rightPaddle), ballVelocityX > 0 {
             ball.x = rightPaddle.x - ball.w
             applyPaddleBounce(paddle: rightPaddle, movingRight: false)
+            return true
         }
+
+        return false
     }
 
-    private mutating func handleScoring() {
+    private mutating func handleScoring() -> Bool {
         if ball.x + ball.w < 0 {
             rightScore += 1
             print("Left \(leftScore) - \(rightScore) Right")
@@ -185,6 +208,8 @@ struct Game {
             } else {
                 resetBall(towardsLeft: false)
             }
+
+            return true
         }
 
         if ball.x > Float(screenWidth) {
@@ -197,7 +222,11 @@ struct Game {
             } else {
                 resetBall(towardsLeft: true)
             }
+
+            return true
         }
+
+        return false
     }
 
     private mutating func resetBall(towardsLeft: Bool) {
