@@ -19,7 +19,8 @@ The goal of this project is to explore a lightweight game loop, SDL rendering, k
   - Playing
   - Paused
   - Game over
-- Procedural SDL audio effects for wall hits, paddle hits, and scoring  
+- Procedural SDL audio effects for wall hits, paddle hits, and scoring
+- Configurable single-player AI difficulty
 
 ## Controls
 
@@ -68,6 +69,7 @@ Sources/SwiftSDLPong/
   AudioPlayer.swift       Procedural SDL audio effects
   Renderer.swift          SDL rendering helpers
   Collision.swift         AABB collision helper
+  AIDifficulty.swift      AI difficulty and paddle speed configuration
 ```
 
 ## Architecture Notes
@@ -105,6 +107,8 @@ Sources/SwiftSDLPong/
 - Score
 
 `AudioPlayer.swift` listens to those events from `main.swift` and plays procedural sine-wave sound effects using SDL audio streams.
+
+`AIDifficulty.swift` defines simple AI speed presets used by the single-player mode.
 
 ## Why SDL?
 

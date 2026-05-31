@@ -145,11 +145,12 @@ struct Game {
     private mutating func updateAIPaddle(deltaTime: Float) {
         let ballCenterY = ball.y + ball.h / 2
         let paddleCenterY = rightPaddle.y + rightPaddle.h / 2
+        let aiSpeed = configuration.aiDifficulty.paddleSpeed
 
         if ballCenterY < paddleCenterY {
-            rightPaddle.y -= configuration.aiPaddleSpeed * deltaTime
+            rightPaddle.y -= aiSpeed * deltaTime
         } else if ballCenterY > paddleCenterY {
-            rightPaddle.y += configuration.aiPaddleSpeed * deltaTime
+            rightPaddle.y += aiSpeed * deltaTime
         }
     }    
 
