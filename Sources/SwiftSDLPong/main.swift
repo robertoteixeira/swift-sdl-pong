@@ -48,6 +48,8 @@ let audioPlayer = AudioPlayer()
 var isRunning = true
 var event = SDL_Event()
 var lastFrameTime = SDL_GetTicks()
+var fpsTimer = SDL_GetTicks()
+var frameCount: UInt32 = 0
 
 while isRunning {
     let currentFrameTime = SDL_GetTicks()
@@ -106,5 +108,14 @@ while isRunning {
     if frameDuration < targetFrameDuration {
         let delay = targetFrameDuration - frameDuration
         SDL_Delay(UInt32(delay))
+    }
+
+    frameCount += 1
+    let fpsElapsedTime = SDL_GetTicks() - fpsTimer
+
+    if fpsElapsedTime >= 1000 {
+        SDL_SetWindowTitle(window, "Swift SDL Pong - \(frameCount) FPS")
+        frameCount = 0
+        fpsTimer = SDL_GetTicks()
     }
 }
