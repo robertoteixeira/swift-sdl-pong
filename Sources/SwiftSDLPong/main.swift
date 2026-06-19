@@ -99,4 +99,12 @@ while isRunning {
     }
 
     renderGame(renderer: renderer, game: &game)
+
+    let frameDuration = SDL_GetTicks() - currentFrameTime
+    let targetFrameDuration = UInt64(1000 / configuration.targetFPS)
+
+    if frameDuration < targetFrameDuration {
+        let delay = targetFrameDuration - frameDuration
+        SDL_Delay(UInt32(delay))
+    }
 }

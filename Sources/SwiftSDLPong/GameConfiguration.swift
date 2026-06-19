@@ -2,6 +2,8 @@ struct GameConfiguration {
     let screenWidth: Int32 = 800
     let screenHeight: Int32 = 600
 
+    let targetFPS: UInt32 = 60
+
     let paddleWidth: Float = 15
     let paddleHeight: Float = 100
     let ballSize: Float = 15

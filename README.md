@@ -21,6 +21,7 @@ The goal of this project is to explore a lightweight game loop, SDL rendering, k
   - Game over
 - Procedural SDL audio effects for wall hits, paddle hits, and scoring
 - Configurable single-player AI difficulty
+- 60 FPS frame cap to reduce unnecessary CPU usage
 
 ## Controls
 
