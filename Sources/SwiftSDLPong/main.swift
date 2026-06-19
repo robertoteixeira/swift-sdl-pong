@@ -47,14 +47,11 @@ let audioPlayer = AudioPlayer()
 
 var isRunning = true
 var event = SDL_Event()
-var lastFrameTime = SDL_GetTicks()
-var fpsTimer = SDL_GetTicks()
-var frameCount: UInt32 = 0
+var frameTimer = FrameTimer(targetFPS: configuration.targetFPS)
 
 while isRunning {
     let currentFrameTime = SDL_GetTicks()
-    let deltaTime = Float(currentFrameTime - lastFrameTime) / 1000.0
-    lastFrameTime = currentFrameTime
+    let deltaTime = frameTimer.beginFrame()
 
     while SDL_PollEvent(&event) {
         if event.type == SDL_EVENT_QUIT.rawValue {
@@ -110,12 +107,10 @@ while isRunning {
         SDL_Delay(UInt32(delay))
     }
 
-    frameCount += 1
-    let fpsElapsedTime = SDL_GetTicks() - fpsTimer
-
-    if fpsElapsedTime >= 1000 {
-        SDL_SetWindowTitle(window, "Swift SDL Pong - \(frameCount) FPS")
-        frameCount = 0
-        fpsTimer = SDL_GetTicks()
+    if let fps = frameTimer.endFrame() {
+        let title = "Swift SDL Pong - \(fps) FPS"
+        title.withCString { cTitle in
+            SDL_SetWindowTitle(window, cTitle)
+        }
     }
 }
