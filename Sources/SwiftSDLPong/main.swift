@@ -80,6 +80,15 @@ while isRunning {
             case SDL_SCANCODE_ESCAPE:
                 isRunning = false
 
+            case SDL_SCANCODE_1:
+                game.setAIDifficulty(.easy)
+
+            case SDL_SCANCODE_2:
+                game.setAIDifficulty(.normal)
+
+            case SDL_SCANCODE_3:
+                game.setAIDifficulty(.hard)
+            
             default:
                 break
             }

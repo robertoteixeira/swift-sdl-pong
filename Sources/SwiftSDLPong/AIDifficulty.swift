@@ -13,4 +13,15 @@ enum AIDifficulty {
                 return 420
         }
     }
+
+    var displayName: String {
+        switch self {
+            case .easy:
+                return "Easy"
+            case .normal:
+                return "Normal"
+            case .hard:
+                return "Hard"
+        }
+    }
 }

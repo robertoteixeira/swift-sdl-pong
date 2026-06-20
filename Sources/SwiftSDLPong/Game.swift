@@ -114,6 +114,11 @@ struct Game {
         print("Game mode: \(configuration.gameMode.displayName)")
     }
 
+    mutating func setAIDifficulty(_ difficulty: AIDifficulty) {
+        configuration.aiDifficulty = difficulty
+        print("AI difficulty: \(difficulty.displayName)")
+    }
+
     private mutating func handleInput(deltaTime: Float, keyboardState: UnsafePointer<Bool>?) {
         guard let keyboardState else { return }
 

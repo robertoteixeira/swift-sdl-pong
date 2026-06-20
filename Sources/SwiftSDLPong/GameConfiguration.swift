@@ -9,7 +9,7 @@ struct GameConfiguration {
     let ballSize: Float = 15
 
     let paddleSpeed: Float = 400
-    let aiDifficulty: AIDifficulty = .easy
+    var aiDifficulty: AIDifficulty = .easy
 
     let initialBallSpeedX: Float = 260
     let initialBallSpeedY: Float = 180

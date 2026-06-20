@@ -37,6 +37,9 @@ The goal of this project is to explore a lightweight game loop, SDL rendering, k
 | `M` | Mute / unmute audio |
 | `T` | Toggle single-player / two-player mode |
 | `Esc` | Close the game |
+| `1` | Set AI difficulty to easy |
+| `2` | Set AI difficulty to normal |
+| `3` | Set AI difficulty to hard |
 
 ## Requirements
 
