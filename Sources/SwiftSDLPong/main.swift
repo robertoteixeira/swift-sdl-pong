@@ -74,6 +74,9 @@ while isRunning {
             case SDL_SCANCODE_M:
                 audioPlayer?.toggleMute()
 
+            case SDL_SCANCODE_T:
+                game.toggleGameMode()
+
             case SDL_SCANCODE_ESCAPE:
                 isRunning = false
 

@@ -19,5 +19,5 @@ struct GameConfiguration {
 
     let winningScore = 2
 
-    let gameMode: GameMode = .singlePlayer
+    var gameMode: GameMode = .singlePlayer
 }

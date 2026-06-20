@@ -1,7 +1,7 @@
 import CSDL3
 
 struct Game {
-    let configuration: GameConfiguration
+    var configuration: GameConfiguration
 
     var screenWidth: Int32 {
         configuration.screenWidth
@@ -106,6 +106,12 @@ struct Game {
         }
 
         return events
+    }
+
+    mutating func toggleGameMode() {
+        configuration.gameMode.toggle()
+        restart()
+        print("Game mode: \(configuration.gameMode.displayName)")
     }
 
     private mutating func handleInput(deltaTime: Float, keyboardState: UnsafePointer<Bool>?) {
