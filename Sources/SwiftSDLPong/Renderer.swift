@@ -237,24 +237,24 @@ func renderGame(renderer: OpaquePointer?, game: inout Game, textRenderer: TextRe
 
     switch game.state {
         case .waitingToStart:
-            textRenderer?.renderText(
+            textRenderer?.renderCenteredText(
                 "PRESS SPACE", 
-                x: Float(game.screenWidth) / 2, 
+                centerX: Float(game.screenWidth) / 2, 
                 y: 520, 
                 renderer: renderer
             )
         case .paused:
-            textRenderer?.renderText(
+            textRenderer?.renderCenteredText(
                 "PAUSED", 
-                x: Float(game.screenWidth) / 2, 
+                centerX: Float(game.screenWidth) / 2, 
                 y: 520, 
                 renderer: renderer
             )
         case .gameOver:
             let winner = game.leftScore > game.rightScore ? "LEFT WINS" : "RIGHT WINS"
-            textRenderer?.renderText(
+            textRenderer?.renderCenteredText(
                 "\(winner) - PRESS R", 
-                x: Float(game.screenWidth) / 2, 
+                centerX: Float(game.screenWidth) / 2, 
                 y: 520, 
                 renderer: renderer
             )
