@@ -1,0 +1,5 @@
+module CSDL3TTF [system] {
+    header "/opt/homebrew/include/SDL3_ttf/SDL_ttf.h"
+    link "SDL3_ttf"
+    export *
+}

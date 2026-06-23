@@ -11,7 +11,10 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "SwiftSDLPong",
-            dependencies: ["CSDL3"]
+            dependencies: [
+                "CSDL3", 
+                "CSDL3TTF"
+            ]
         ),
         .systemLibrary(
             name: "CSDL3",
@@ -19,6 +22,13 @@ let package = Package(
             providers: [
                 .brew(["sdl3"])
             ]
-        )
+        ),
+        .systemLibrary(
+            name: "CSDL3TTF",
+            pkgConfig: "sdl3-ttf",
+            providers: [
+                .brew(["sdl3_ttf"])
+            ]
+        )        
     ]
 )

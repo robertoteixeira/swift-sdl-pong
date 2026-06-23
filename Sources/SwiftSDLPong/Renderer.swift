@@ -196,7 +196,7 @@ func renderWinnerIndicator(renderer: OpaquePointer?, screenWidth: Int32, leftSco
     SDL_RenderFillRect(renderer, &marker)
 }
 
-func renderGame(renderer: OpaquePointer?, game: inout Game) {
+func renderGame(renderer: OpaquePointer?, game: inout Game, textRenderer: TextRenderer?) {
     SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255)
     SDL_RenderClear(renderer)
 
@@ -231,6 +231,18 @@ func renderGame(renderer: OpaquePointer?, game: inout Game) {
                 leftScore: game.leftScore, 
                 rightScore: game.rightScore
             )
+        case .playing:
+            break
+    }
+
+    switch game.state {
+        case .waitingToStart:
+            textRenderer?.renderText("PRESS SPACE", x: 270, y: 520, renderer: renderer)
+        case .paused:
+            textRenderer?.renderText("PAUSED", x: 335, y: 520, renderer: renderer)
+        case .gameOver:
+            let winner = game.leftScore > game.rightScore ? "LEFT WINS" : "RIGHT WINS"
+            textRenderer?.renderText("\(winner) - PRESS R", x: 210, y: 520, renderer: renderer)
         case .playing:
             break
     }

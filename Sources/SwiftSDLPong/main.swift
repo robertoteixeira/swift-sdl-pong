@@ -44,6 +44,10 @@ defer {
 
 var game = Game(configuration: configuration)
 let audioPlayer = AudioPlayer()
+let textRenderer = TextRenderer(
+    fontPath: "Assets/Fonts/PressStart2P-Regular.ttf",
+    pointSize: 16
+)
 
 var isRunning = true
 var event = SDL_Event()
@@ -109,7 +113,7 @@ while isRunning {
         }
     }
 
-    renderGame(renderer: renderer, game: &game)
+    renderGame(renderer: renderer, game: &game, textRenderer: textRenderer)
 
     let frameDuration = SDL_GetTicks() - currentFrameTime
     let targetFrameDuration = UInt64(1000 / configuration.targetFPS)
