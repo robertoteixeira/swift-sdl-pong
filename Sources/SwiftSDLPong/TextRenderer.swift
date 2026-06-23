@@ -79,5 +79,48 @@ final class TextRenderer {
             SDL_RenderTexture(renderer, texture, nil, &destination)
         }
     }
+
+    func renderCenteredText(
+        _ text: String,
+        centerX: Float,
+        y: Float,
+        renderer: OpaquePointer?
+    ) {
+        guard let size = textSize(text) else { return }
+
+        let x = centerX - Float(size.width) / 2
+
+        renderText(
+            text, 
+            x: x,
+            y: y,
+            renderer: renderer
+        )
+    }
+
+    func textSize(_ text: String) -> (width: Int32, height: Int32)? {
+        guard let font else { return nil }
+
+        var width: Int32 = 0
+        var height: Int32 = 0
+
+        let success = text.withCString { cText in
+            TTF_GetStringSize(
+                font,
+                cText,
+                0,
+                &width,
+                &height
+            )
+        }
+
+        guard success else {
+            let error = String(cString: SDL_GetError())
+            print("TTF_GetStringSize failed: \(error)")
+            return nil
+        }
+
+        return (width, height)
+    }
     
 }
